@@ -2,28 +2,44 @@ version: "3"
  
 services:
   miservicio_mysql:
-    image: mysql:5.7
+    image: mysql:5.6
+    #build: 
+      #context: ./database
     environment:
+      #- MYSQL HOST: 0.0.0.0
       - MYSQL_DATABASE=facturacion
       - MYSQL_ROOT_PASSWORD=
       - MYSQL_USER=root
       - MYSQL_PASSWORD=
-    volumes:
+    #volumes:
       # Montamos un volumen para MySQL para no perder los datos de bd
-      - ./volumenes/mysql:/var/lib/mysql
+    #  - ./sql:/var/lib/mysql
     
     ports:
-      - 3306:3306
-   
-  miservicio_php:
-    image: php:7-apache
+      - 3308:3306
     restart: always
+    volumes: 
+      - mysql:/var/lib/mysql
+
+
+  miservicio_php:
+    #build:
+     # context: ./app
+    image: php:7.3-apache
+    build: ./
+      #context: ./
+      #dockerfile: Dockerfile 
+    restart: always
+    ports:
+      - 81:80
     volumes:
       # Montamos nuestra web desde fuera en el directorio web del contenedor
-      - ./miweb/:/var/www/html
-    expose:
-      - 80
-    ports:
-      - 80:80
-    links: 
-      - miservicio_mysql
+      - .:/var/www/html
+    #links: 
+     # - miservicio_mysql
+#volumes:
+#  app: {}  
+volumes: 
+    mysql:
+      driver: "local"
+    
